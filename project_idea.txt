@@ -1,8 +1,5 @@
 PROJECT IDEA:
 
-Take the HAL and rewrite it in RUST, the more peripherals and things you can implement the better
-
-if you manage to get to a good point you can do a small testbench with something, otherwise no worries. (Remember to add in the presentations the possible outcomes of rewriting everything in rust, and the possible future implementations idea, like an RTOS based on rust)
-
+Create a simple RTOS for a critical application. if you manage to do also an hardware demo it's cool, otherwise no worries
 
 

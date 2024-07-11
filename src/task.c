@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+
 #include "task.h"
 #include "msp.h"
 #include "utils.h"
@@ -31,7 +33,7 @@ void scheduler(Graphics_Context *context) {
     // Log and execute task
     sprintf(log, "Task %d executing", currentTask);
     tasks[currentTask].taskFunc();
-    logToLCD(log);
+    logToLCD(context, log);
 
     // Delete log
     strcpy(log, "");

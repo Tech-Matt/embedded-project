@@ -5,3 +5,6 @@
 
 
 void logToLCD(Graphics_Context *context, const char* message);
+
+
+#endif /* UTILS_H_ */

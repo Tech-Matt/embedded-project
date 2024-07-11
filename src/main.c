@@ -63,24 +63,24 @@ void _hw_init() {
 
 // Example task 1
 void task1(void) {
-    while (1) {
-        semaphoreWait(&sem);
-        GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0); // Toggle LED
-        volatile int i;
-        for (i = 0; i < LED_DELAY; i++); // Delay
-        semaphoreSignal(&sem);
-    }
+    // Lock
+    semaphoreWait(&sem);
+    GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0); // Toggle LED
+    volatile int i;
+    for (i = 0; i < LED_DELAY; i++); // Delay
+    // Unlock
+    semaphoreSignal(&sem);
 }
 
 // Example task 2
 void task2(void) {
-    while (1) {
-        semaphoreWait(&sem);
-        GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN1); // Toggle another LED
-        volatile int i;
-        for (i = 0; i < LED_DELAY; i++); // Delay
-        semaphoreSignal(&sem);
-    }
+    // Lock
+    semaphoreWait(&sem);
+    GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN1); // Toggle another LED
+    volatile int i;
+    for (i = 0; i < LED_DELAY; i++); // Delay
+    // Unlock
+    semaphoreSignal(&sem);
 }
 
 int main(void) {

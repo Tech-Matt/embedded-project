@@ -19,6 +19,6 @@ extern int currentTask;
 
 void initTasks(void);
 void createTask(void (*taskFunc)(void), int taskId);
-void scheduler(Graphics_Context *context, void);
+void scheduler(Graphics_Context *context);
 
 #endif /* TASK_H_ */

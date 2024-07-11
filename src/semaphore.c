@@ -17,5 +17,4 @@ void semaphoreWait(Semaphore *sem) {
 /* Same thing as above applies here */
 void semaphoreSignal(Semaphore *sem) {
     sem->value++;
-    scheduler();
 }

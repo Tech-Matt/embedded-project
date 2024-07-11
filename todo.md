@@ -1,9 +1,9 @@
 # Todo
 
 ## Current tasks
-- [ ] Make the code a bit more readable moving functions, creating .h and etc.
 - [ ] Implement lcd graphics
 - [ ] Make the semaphores atomic
+- [ ] Read about the clock Subsystem and debug clock init
 
 ## TASKS
 - [ ] think about what possible tasks you could implement and which system to simulate
@@ -14,4 +14,8 @@
 - [ ] Search / calculate tasks funcion calls required time to execute 
 - [ ] Pay attention to interrupts, they could make your system non deterministic. Consider the option of disabling them
 - [ ] Think about a cool name with "---RTOS" (LOL)
+
+## Done
+- [x] Make the code a bit more readable moving functions, creating .h and etc.
+
 

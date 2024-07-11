@@ -2,6 +2,8 @@
 #define TASK_H_
 
 #include <stdint.h>
+#include <ti/grlib/grlib.h>
+
 
 #define MAX_TASKS 3
 #define STACK_SIZE 1024
@@ -17,6 +19,6 @@ extern int currentTask;
 
 void initTasks(void);
 void createTask(void (*taskFunc)(void), int taskId);
-void scheduler(void);
+void scheduler(Graphics_Context *context, void);
 
 #endif /* TASK_H_ */

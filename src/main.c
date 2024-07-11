@@ -32,17 +32,17 @@ void _graphicsInit()
 
     /* Initializes graphics context */
     Graphics_initContext(&g_sContext, &g_sCrystalfontz128x128, &g_sCrystalfontz128x128_funcs);
-        Graphics_setForegroundColor(&g_sContext, GRAPHICS_COLOR_RED);
-        Graphics_setBackgroundColor(&g_sContext, GRAPHICS_COLOR_WHITE);
-        GrContextFontSet(&g_sContext, &g_sFontFixed6x8);
-        Graphics_clearDisplay(&g_sContext);
+    Graphics_setForegroundColor(&g_sContext, GRAPHICS_COLOR_RED);
+    Graphics_setBackgroundColor(&g_sContext, GRAPHICS_COLOR_WHITE);
+    GrContextFontSet(&g_sContext, &g_sFontFixed6x8);
+    Graphics_clearDisplay(&g_sContext);
 
-        Graphics_drawStringCentered(&g_sContext,
-                                        (int8_t *)"RTOS:",
-                                        AUTO_STRING_LENGTH,
-                                        64,
-                                        30,
-                                        OPAQUE_TEXT);
+    Graphics_drawStringCentered(&g_sContext,
+                                (int8_t *)"RTOS:",
+                                AUTO_STRING_LENGTH,
+                                64,
+                                30,
+                                OPAQUE_TEXT);
 
 }
 
@@ -52,11 +52,7 @@ void _hw_init() {
     WDT_A_holdTimer();
 
     /* Initializes Clock System */
-    CS_setDCOCenteredFrequency(CS_DCO_FREQUENCY_48);
-    CS_initClockSignal(CS_MCLK, CS_DCOCLK_SELECT, CS_CLOCK_DIVIDER_1);
-    CS_initClockSignal(CS_HSMCLK, CS_DCOCLK_SELECT, CS_CLOCK_DIVIDER_1);
-    CS_initClockSignal(CS_SMCLK, CS_DCOCLK_SELECT, CS_CLOCK_DIVIDER_1);
-    CS_initClockSignal(CS_ACLK, CS_REFOCLK_SELECT, CS_CLOCK_DIVIDER_1);
+
 
     // Initialize GPIOs
     _gpio_init();
@@ -65,17 +61,6 @@ void _hw_init() {
     _graphicsInit();
 }
 
-void logToLCD(const char* message) {
-    static int yPos = 0;
-
-    if (yPos > 120) {
-        yPos = 0;
-        Graphics_clearDisplay(&g_sContext);
-    }
-
-    Graphics_drawString(&g_sContext, (int8_t *)message, AUTO_STRING_LENGTH, 0, yPos, OPAQUE_TEXT);
-    yPos += 10;
-}
 // Example task 1
 void task1(void) {
     while (1) {
@@ -109,6 +94,6 @@ int main(void) {
     createTask(task2, 1);
 
     while (1) {
-        scheduler();
+        scheduler(&g_sContext);
     }
 }

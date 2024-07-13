@@ -6,15 +6,36 @@ void semaphoreInit(Semaphore *sem, int value) {
     sem->value = value;
 }
 
-/* Try to make the implementation safer. When the semaphore is available multiple tasks could try to enter the
- * critical zone at the same time. You should use atomic instructions. See if TI provides them
- */
+// ATOMIC IMPLEMENTATION -- using LDREX, STREX
 void semaphoreWait(Semaphore *sem) {
-    while (sem->value <= 0); // Polling
-    sem->value--;
+    int success;
+    do {
+        while(sem->value <= 0) {
+            // busy wait
+        }
+    __asm volatile (
+            "ldrex %0, [%1]\n"         // Load the semaphore value
+            "subs    %0, %0, #1\n"     // Decrement the value
+            "strex   %2, %0, [%1]\n"   // Attempt to store the new value
+            : "=&r" (success)          // Output operands
+            : "r" (&s->value), "0" (0) // Input operands
+            : "cc"                     // Clobbered registers
+        );
+    } while (success != 0);            // Retry if the store was unsuccessful
 }
 
 /* Same thing as above applies here */
 void semaphoreSignal(Semaphore *sem) {
-    sem->value++;
+    int success;
+        int new_value;
+        do {
+            __asm volatile (
+                "ldrex   %0, [%1]\n"                 // Load the semaphore value
+                "adds    %0, %0, #1\n"               // Increment the value
+                "strex   %2, %0, [%1]\n"             // Attempt to store the new value
+                : "=&r" (new_value), "=&r" (success) // Output operands
+                : "r" (&s->value)                    // Input operands
+                : "cc"                               // Clobbered registers
+            );
+        } while (success != 0);            // Retry if the store was unsuccessful
 }

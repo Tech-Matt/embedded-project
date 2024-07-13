@@ -23,7 +23,7 @@ void createTask(void (*taskFunc)(void), int taskId) {
     tasks[taskId].stackPointer = &tasks[taskId].stack[STACK_SIZE - 1];
 }
 
-// Round-Robin scheduler
+// Round-Robin scheduler (no preemption)
 char log[50];
 void scheduler(Graphics_Context *context) {
     currentTask = (currentTask + 1) % MAX_TASKS;

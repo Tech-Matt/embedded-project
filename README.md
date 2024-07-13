@@ -1,7 +1,9 @@
 # rtos
-Building a small real time OS for TI MSP432.
+Building a small "hard" real time OS for TI MSP432.
 
 ## Supported Functionalities
+- [x] Simple Round Robin scheduler (no preemption)
+- [x] Atomic Semaphores
 
 ## Dependencies
 You need to have a Library folder somewhere in your pc to import the following:
@@ -17,3 +19,6 @@ Add here instructions to set up driver lib and grlib
 ## Synchronization
 
 ## Strenghts / Weaknesses
+
+# Resources
+- https://github.com/monpeco/real_time_bn/tree/master

@@ -20,5 +20,5 @@ Add here instructions to set up driver lib and grlib
 
 ## Strenghts / Weaknesses
 
-# Resources
-- https://github.com/monpeco/real_time_bn/tree/master
+## Resources
+

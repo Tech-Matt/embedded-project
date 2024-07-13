@@ -1,7 +1,9 @@
 # Todo
 
 ## Current tasks
-- [ ] Make the semaphores atomic
+- [ ] Make also semaphore init atomic (?)
+- [ ] Test if semaphores are actually running
+- [ ] Is there a different way to make semaphores atomic (swap? test and set?)
 - [ ] Pay attention to interrupts, they could make your system non deterministic. Consider the option of disabling them
 - [ ] Investigate what other things you could implement as a real time os
 - [ ] think about what possible tasks you could implement and which system to simulate
@@ -19,5 +21,7 @@
 ## Done
 - [x] Make the code a bit more readable moving functions, creating .h and etc.
 - [x] Implement lcd graphics
+- [x] Make the semaphores atomic
+
 
 

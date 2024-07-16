@@ -59,11 +59,8 @@ void _graphicsInit()
 
 void _hw_init() {
 
-    /* Halting WDT and disabling master interrupts */
-    WDT_A_holdTimer();
-
     /* Initialize SysTick */
-    _systick_init();
+    // _systick_init();
 
     /* Enabling MASTER interrupts */
     Interrupt_enableMaster();
@@ -99,14 +96,16 @@ void task2(void) {
 }
 
 int main(void) {
+    /* Halting WDT and disabling master interrupts */
+    WDT_A_holdTimer();
 
     _hw_init();
 
     initTasks();
     semaphoreInit(&sem, 1);
 
-    createTask(task1, 0);
-    createTask(task2, 1);
+    createTask(task1, 0, 500, 1);
+    createTask(task2, 1, 501, 1);
 
     while (1) {
         scheduler(&g_sContext);

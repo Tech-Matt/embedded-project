@@ -6,7 +6,7 @@
 #include <ti/grlib/grlib.h>
 
 
-
+#define SYSTICK_PERIOD 1500000
 #define LED_DELAY 100000
 
 Semaphore sem;
@@ -14,8 +14,19 @@ Semaphore sem;
 // Declare global graphics context
 Graphics_Context g_sContext;
 
+/* Configuring SysTick to trigger at 1500000 (MCLK is 1.5MHz so this will make it toggle every 1s) */
+void _systick_init() {
+    // Disable the SysTick timer during setup
+    SysTick_disableModule();
+
+    SysTick_enableModule();
+    SysTick_setPeriod(SYSTICK_PERIOD);
+    Interrupt_enableSleepOnIsrExit();
+    SysTick_enableInterrupt();
+}
+
+// Initialize LEDs
 void _gpio_init() {
-    // Initialize LEDs as Output
     GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
     GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN1);
     GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
@@ -51,8 +62,14 @@ void _hw_init() {
     /* Halting WDT and disabling master interrupts */
     WDT_A_holdTimer();
 
-    /* Initializes Clock System */
+    /* Initialize SysTick */
+    _systick_init();
 
+    /* Enabling MASTER interrupts */
+    Interrupt_enableMaster();
+
+    /* Initializes Clock System */
+    //TODO Initialize clock
 
     // Initialize GPIOs
     _gpio_init();
@@ -74,12 +91,10 @@ void task1(void) {
 
 // Example task 2
 void task2(void) {
-    // Lock
     semaphoreWait(&sem);
     GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN1); // Toggle another LED
     volatile int i;
     for (i = 0; i < LED_DELAY; i++); // Delay
-    // Unlock
     semaphoreSignal(&sem);
 }
 
@@ -96,4 +111,11 @@ int main(void) {
     while (1) {
         scheduler(&g_sContext);
     }
+}
+
+void SysTick_Handler(void)
+{
+    //TODO Implement call to the scheduler
+    //TODO Implement elapsed time calculation
+    //TODO Implement Task time violation handling
 }

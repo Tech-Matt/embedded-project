@@ -1,8 +1,7 @@
 #include "semaphore.h"
-#include "task.h"
-
 #include <stdio.h>
 #include <arm_acle.h>
+#include <sched.h>
 
 // Semaphore can be of any given size
 //TODO consider if implementing atomic instructions also here

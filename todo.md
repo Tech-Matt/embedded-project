@@ -3,17 +3,17 @@
 ## Current tasks
 
 Project
-- [ ] Implement SysTick
-- [ ] Choose a coherent systick period
-- [ ] Make a task/process control block
 - [ ] Make a stack
 - [ ] Implement Preemptive scheduler 
 - [ ] Implement function that computes elapsed task time (using systick)
+- [ ] Choose a coherent systick period
 - [ ] Implement function to handle time violation system handling
+- [ ] TESTS!
 - [ ] Make a selection menu for the creation of soft tasks, hard tasks, etc.
 - [ ] Maybe remove some comments
 
 Doc
+- [ ] Document function signatures in the code
 - [ ] Write documentation
 - [ ] Make video
 - [ ] Think about a cool name with "---RTOS" 
@@ -26,13 +26,15 @@ Doc
 - [ ] You could also implement a FSM with low power modes
 - [ ] Make also semaphore init atomic (?)
 
-
-
 ## Done
 - [x] Make the code a bit more readable moving functions, creating .h and etc.
 - [x] Implement lcd graphics
 - [x] Make the semaphores atomic
 - [x] Test if semaphores are actually running
+- [x] Implement SysTick
+- [x] Make a task/process control block
+
+
 
 
 

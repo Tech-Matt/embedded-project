@@ -1,11 +1,12 @@
+#include <sched.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "task.h"
 #include "msp.h"
 #include "utils.h"
 #include "LcdDriver/Crystalfontz128x128_ST7735.h"
 
+#define MAX_TASKS 3
 
 TaskControlBlock tasks[MAX_TASKS];
 int currentTask = -1;

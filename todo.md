@@ -3,7 +3,6 @@
 ## Current tasks
 
 Project
-- [ ] Systick is causing problems in debug mode, debug it
 - [ ] Implement Preemptive scheduler 
 - [ ] Implement function that computes elapsed task time (using systick)
 - [ ] Choose a coherent systick period
@@ -35,6 +34,8 @@ Doc
 - [x] Make a task/process control block
 - [x] Make a stack
 - [x] Add a simulated "state" to be saved on the stack
+- [x] Systick is causing problems in debug mode, debug it
+
 
 
 

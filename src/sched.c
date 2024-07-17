@@ -48,6 +48,9 @@ int createTask(void (*taskFunc)(void), uint32_t taskId, uint32_t pid, uint32_t p
 char log[50];
 void scheduler(Graphics_Context *context) {
 
+    // ENTERING CRITICAL SECTION, DISABLING SYSTICK
+    SysTick_disableInterrupt();
+
     currentTask = (currentTask + 1) % MAX_TASKS;
     while (tasks[currentTask].taskFunc == NULL) { // Careful, possible infinite loop
         currentTask = (currentTask + 1) % MAX_TASKS;
@@ -59,6 +62,9 @@ void scheduler(Graphics_Context *context) {
 
     // Delete log
     strcpy(log, "");
+
+    // EXITING CRITICAL SECTION, ENABLING SYSTICK
+    SysTick_enableInterrupt();
 }
 
 

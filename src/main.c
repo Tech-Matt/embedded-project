@@ -18,11 +18,10 @@ Graphics_Context g_sContext;
 void _systick_init() {
     // Disable the SysTick timer during setup
     SysTick_disableModule();
-
-    SysTick_enableModule();
     SysTick_setPeriod(SYSTICK_PERIOD);
     Interrupt_enableSleepOnIsrExit();
     SysTick_enableInterrupt();
+    SysTick_enableModule();
 }
 
 // Initialize LEDs
@@ -55,16 +54,14 @@ void _graphicsInit()
                                 30,
                                 OPAQUE_TEXT);
 
+    int i;
+    for (i = 0; i < LED_DELAY; i++); // Delay
+
+    Graphics_clearDisplay(&g_sContext);
+
 }
 
 void _hw_init() {
-
-    /* Initialize SysTick */
-    // _systick_init();
-
-    /* Enabling MASTER interrupts */
-    Interrupt_enableMaster();
-
     /* Initializes Clock System */
     //TODO Initialize clock
 
@@ -73,16 +70,20 @@ void _hw_init() {
 
     // Initialize graphics
     _graphicsInit();
+
+    /* Initialize SysTick */
+    _systick_init();
+
+    /* Enabling MASTER interrupts */
+    Interrupt_enableMaster();
 }
 
 // Example task 1
 void task1(void) {
-    // Lock
     semaphoreWait(&sem);
     GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0); // Toggle LED
     volatile int i;
     for (i = 0; i < LED_DELAY; i++); // Delay
-    // Unlock
     semaphoreSignal(&sem);
 }
 

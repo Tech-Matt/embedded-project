@@ -6,8 +6,9 @@
 #include <ti/grlib/grlib.h>
 
 
-#define SYSTICK_PERIOD 1500000
+#define SYSTICK_PERIOD 12000000
 #define LED_DELAY 100000
+#define SCREEN_DELAY 200000
 
 Semaphore sem;
 
@@ -16,8 +17,9 @@ Graphics_Context g_sContext;
 
 /* Configuring SysTick to trigger at 1500000 (MCLK is 1.5MHz so this will make it toggle every 1s) */
 void _systick_init() {
-    // Disable the SysTick timer during setup
+    /* Disable the SysTick timer during setup */
     SysTick_disableModule();
+    /* The Core clock is 3MHZ so put any multiple to achieve the desired period */
     SysTick_setPeriod(SYSTICK_PERIOD);
     Interrupt_enableSleepOnIsrExit();
     SysTick_enableInterrupt();
@@ -54,16 +56,18 @@ void _graphicsInit()
                                 30,
                                 OPAQUE_TEXT);
 
+    Graphics_drawString(&g_sContext, (int8_t *)"designed by:", AUTO_STRING_LENGTH, 30, 80, OPAQUE_TEXT);
+    Graphics_drawString(&g_sContext, (int8_t *)"Mattia Rizzo", AUTO_STRING_LENGTH, 30, 95, OPAQUE_TEXT);
+
     int i;
-    for (i = 0; i < LED_DELAY; i++); // Delay
+    for (i = 0; i < SCREEN_DELAY; i++); // Delay
 
     Graphics_clearDisplay(&g_sContext);
 
 }
 
 void _hw_init() {
-    /* Initializes Clock System */
-    //TODO Initialize clock
+    /* Clock is left as default - 3 MHz */
 
     // Initialize GPIOs
     _gpio_init();

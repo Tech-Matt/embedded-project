@@ -5,7 +5,6 @@
 Project
 - [ ] Implement Preemptive scheduler 
 - [ ] Implement function that computes elapsed task time (using systick)
-- [ ] Choose a coherent systick period
 - [ ] Implement function to handle time violation system handling
 - [ ] TESTS!
 - [ ] Make a selection menu for the creation of soft tasks, hard tasks, etc.
@@ -21,7 +20,6 @@ Doc
 - [ ] study the scheduling of the tasks, assure there are no possible deadlocks and decide scheduling algorithm
 - [ ] Search / calculate tasks funcion calls required time to execute 
 - [ ] make the graphic a bit better, and maybe add more logging and user interaction
-- [ ] Read about the clock Subsystem and debug clock init
 - [ ] You could also implement a FSM with low power modes
 - [ ] Make also semaphore init atomic (?)
 
@@ -35,6 +33,9 @@ Doc
 - [x] Make a stack
 - [x] Add a simulated "state" to be saved on the stack
 - [x] Systick is causing problems in debug mode, debug it
+- [x] Read about the clock Subsystem and debug clock init
+- [x] Choose a coherent systick period
+
 
 
 

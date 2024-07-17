@@ -4,7 +4,6 @@
 #include <sched.h>
 
 // Semaphore can be of any given size
-//TODO consider if implementing atomic instructions also here
 void semaphoreInit(Semaphore *sem, int value) {
     sem->value = value;
 }
@@ -21,8 +20,8 @@ void semaphoreWait(Semaphore *sem) {
             tmp--;
         } while (__strex(tmp, (volatile uint32_t *)&sem->value) != 0);
 
-        // Memory barrier to ensure the operation is complete
-        _dmb();
+    // Memory barrier to ensure the operation is complete
+    _dmb();
 }
 
 

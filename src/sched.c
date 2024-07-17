@@ -63,6 +63,8 @@ void scheduler(Graphics_Context *context) {
         // Reset elapsed seconds for the new task
         elapsed_seconds = 0;
 
+        logToLCD(context, "Scheduling Started");
+
         currentTask = (currentTask + 1) % MAX_TASKS;
         while (tasks[currentTask].taskFunc == NULL) { // Careful, possible infinite loop
             currentTask = (currentTask + 1) % MAX_TASKS;
@@ -71,8 +73,13 @@ void scheduler(Graphics_Context *context) {
         type = tasks[currentTask].type;
         // Log and execute task
         sprintf(log, "Task %d executing", currentTask);
-        tasks[currentTask].taskFunc();
         logToLCD(context, log);
+
+        /* EXITING CRITICAL SECTION TO RESUME NORMAL FUNCTION FLOW */
+        SysTick_enableInterrupt();
+        tasks[currentTask].taskFunc();
+        SysTick_disableInterrupt();
+        /* START OF A NEW CRITICAL SECTION TO STOP SYSTICK WITH INTERFERING WITH SCHEDULING */
 
         // Delete log
         strcpy(log, "");

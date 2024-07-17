@@ -11,7 +11,7 @@
 #define SYSTICK_PERIOD 12000000
 #define LED_DELAY 100000
 #define SCREEN_DELAY 200000
-#define LONG_DELAY 5000000
+#define LONG_DELAY 400000
 
 #define HARD_DEADLINE 12
 #define SOFT_DEADLINE 8
@@ -97,11 +97,13 @@ void _hw_init() {
 
 // Example task 1
 void task1(void) {
+
     semaphoreWait(&sem);
     GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0); // Toggle LED
     volatile int i;
     for (i = 0; i < LONG_DELAY; i++); // Delay
     semaphoreSignal(&sem);
+
 }
 
 // Example task 2
@@ -131,7 +133,10 @@ int main(void) {
 /* This function gets called when a soft task doesn't end before the time constraint, in this case the scheduler gets called */
 void soft_time_violation() {
     SysTick_disableInterrupt();
-    logToLCD(&g_sContext, "Task Stopped. Calling scheduler.");
+    logToLCD(&g_sContext, "Task Stopped");
+    logToLCD(&g_sContext, "Releasing Semaphore");
+    semaphoreSignal(&sem);
+    logToLCD(&g_sContext, "Calling scheduler");
     int i;
     for(i = 0; i < SCREEN_DELAY; i++); //Delay
     scheduler(&g_sContext);
@@ -143,6 +148,18 @@ void soft_time_violation() {
 void hard_time_violation() {
     Interrupt_disableMaster();
     // Save stack, do useful stuff
+    Graphics_clearDisplay(&g_sContext);
+
+    Graphics_drawStringCentered(&g_sContext,
+                                (int8_t *)"REBOOT",
+                                AUTO_STRING_LENGTH,
+                                64,
+                                30,
+                                OPAQUE_TEXT);
+
+    int i;
+    for (i = 0; i < 2 * LONG_DELAY; i++); // Delay
+
     SysCtl_rebootDevice();
 }
 
@@ -152,7 +169,10 @@ void SysTick_Handler(void)
 
     /* ANYTIME TASK TIME VIOLATION */
     if (elapsed_seconds > ANYTIME_DEADLINE && type == ANYTIME) {
-            logToLCD(&g_sContext, "Anytime Task took to much time. Calling scheduler");
+            logToLCD(&g_sContext, "Anytime Task took");
+            logToLCD(&g_sContext, "too much time");
+            logToLCD(&g_sContext, "Calling Scheduler");
+
             int i;
             for(i = 0; i < SCREEN_DELAY; i++); //Delay
             scheduler(&g_sContext);
@@ -160,7 +180,7 @@ void SysTick_Handler(void)
 
     /* SOFT TASK TIME VIOLATION */
     if (elapsed_seconds > SOFT_DEADLINE && type == SOFT) {
-        logToLCD(&g_sContext, "Soft Task is taking too much time");
+        logToLCD(&g_sContext, "Soft Task took too much time");
         int i;
         for(i = 0; i < SCREEN_DELAY; i++); //Delay
         soft_time_violation(); // Calling time violation routine
@@ -168,10 +188,13 @@ void SysTick_Handler(void)
 
     /* HARD TASK TIME VIOLATION */
     else if (elapsed_seconds > HARD && type == HARD) {
-        logToLCD(&g_sContext, "Hard task has failed to comply to time constraints.\n\n SYSTEM HALTING NOW.");
+        logToLCD(&g_sContext, "Hard task has failed to comply");
+        logToLCD(&g_sContext, "to time constraints.");
+        logToLCD(&g_sContext, "SYSTEM HALTING NOW");
         int i;
         for(i = 0; i < SCREEN_DELAY; i++); //Delay
         hard_time_violation(); // Calling hard time violation routine
     }
+
 }
 

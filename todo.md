@@ -6,8 +6,8 @@ Project
 - [ ] Implement Preemptive scheduler 
 - [ ] Implement function that computes elapsed task time (using systick)
 - [ ] Implement function to handle time violation system handling
-- [ ] TESTS!
 - [ ] Make a selection menu for the creation of soft tasks, hard tasks, etc.
+- [ ] TESTS!
 - [ ] Maybe remove some comments
 
 Doc

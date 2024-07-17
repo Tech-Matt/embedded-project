@@ -4,13 +4,26 @@
 #include "semaphore.h"
 #include "LcdDriver/Crystalfontz128x128_ST7735.h"
 #include <ti/grlib/grlib.h>
+#include "utils.h"
 
 
+#define CLOCK 3000000
 #define SYSTICK_PERIOD 12000000
 #define LED_DELAY 100000
 #define SCREEN_DELAY 200000
+#define LONG_DELAY 5000000
+
+#define HARD_DEADLINE 12
+#define SOFT_DEADLINE 8
+#define ANYTIME_DEADLINE 8
 
 Semaphore sem;
+
+/* Keeps track of how long a task has been executing */
+volatile uint32_t elapsed_seconds = 0;
+
+// Keeps track of current task type in time violations handling
+extern TaskType type;
 
 // Declare global graphics context
 Graphics_Context g_sContext;
@@ -87,7 +100,7 @@ void task1(void) {
     semaphoreWait(&sem);
     GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0); // Toggle LED
     volatile int i;
-    for (i = 0; i < LED_DELAY; i++); // Delay
+    for (i = 0; i < LONG_DELAY; i++); // Delay
     semaphoreSignal(&sem);
 }
 
@@ -96,7 +109,7 @@ void task2(void) {
     semaphoreWait(&sem);
     GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN1); // Toggle another LED
     volatile int i;
-    for (i = 0; i < LED_DELAY; i++); // Delay
+    for (i = 0; i < LONG_DELAY; i++); // Delay
     semaphoreSignal(&sem);
 }
 
@@ -109,17 +122,56 @@ int main(void) {
     initTasks();
     semaphoreInit(&sem, 1);
 
-    createTask(task1, 0, 500, 1);
-    createTask(task2, 1, 501, 1);
+    createTask(task1, SOFT, 0, 500, 1);
+    createTask(task2, HARD, 1, 501, 1);
 
-    while (1) {
-        scheduler(&g_sContext);
-    }
+    scheduler(&g_sContext);
+}
+
+/* This function gets called when a soft task doesn't end before the time constraint, in this case the scheduler gets called */
+void soft_time_violation() {
+    SysTick_disableInterrupt();
+    logToLCD(&g_sContext, "Task Stopped. Calling scheduler.");
+    int i;
+    for(i = 0; i < SCREEN_DELAY; i++); //Delay
+    scheduler(&g_sContext);
+}
+
+/* This function gets called when a hard task doesn't end before the time constraint. The msp432 is put in a safe state and
+ * then rebooted.
+ */
+void hard_time_violation() {
+    Interrupt_disableMaster();
+    // Save stack, do useful stuff
+    SysCtl_rebootDevice();
 }
 
 void SysTick_Handler(void)
 {
-    //TODO Implement call to the scheduler
-    //TODO Implement elapsed time calculation
-    //TODO Implement Task time violation handling
+    elapsed_seconds = elapsed_seconds + (SYSTICK_PERIOD / CLOCK);
+
+    /* ANYTIME TASK TIME VIOLATION */
+    if (elapsed_seconds > ANYTIME_DEADLINE && type == ANYTIME) {
+            logToLCD(&g_sContext, "Anytime Task took to much time. Calling scheduler");
+            int i;
+            for(i = 0; i < SCREEN_DELAY; i++); //Delay
+            scheduler(&g_sContext);
+        }
+
+    /* SOFT TASK TIME VIOLATION */
+    if (elapsed_seconds > SOFT_DEADLINE && type == SOFT) {
+        logToLCD(&g_sContext, "Soft Task is taking too much time");
+        int i;
+        for(i = 0; i < SCREEN_DELAY; i++); //Delay
+        soft_time_violation(); // Calling time violation routine
+    }
+
+    /* HARD TASK TIME VIOLATION */
+    else if (elapsed_seconds > HARD && type == HARD) {
+        logToLCD(&g_sContext, "Hard task has failed to comply to time constraints.\n\n SYSTEM HALTING NOW.");
+        int i;
+        for(i = 0; i < SCREEN_DELAY; i++); //Delay
+        hard_time_violation(); // Calling hard time violation routine
+    }
 }
+

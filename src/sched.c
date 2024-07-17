@@ -11,16 +11,23 @@ TaskData stack[STACK_SIZE];
 int currentTask = -1;
 int stackTop = 0; // Points to the next free slot in the stack
 
+/* Keeps track of how long a task has been executing */
+extern uint32_t elapsed_seconds;
+
+// Keeps track of current task type in time violations handling
+TaskType type = ANYTIME;
+
 void initTasks(void) {
     int i;
     for (i = 0; i < MAX_TASKS; i++) {
         tasks[i].state = TASK_SUSPENDED;
         tasks[i].taskFunc = NULL;
         tasks[i].stackPointer = NULL;
+        tasks[i].type = ANYTIME;
     }
 }
 
-int createTask(void (*taskFunc)(void), uint32_t taskId, uint32_t pid, uint32_t priority) {
+int createTask(void (*taskFunc)(void), TaskType type, uint32_t taskId, uint32_t pid, uint32_t priority) {
     if (taskId >= MAX_TASKS) {
         return -1; // Invalid task ID
     }
@@ -32,6 +39,7 @@ int createTask(void (*taskFunc)(void), uint32_t taskId, uint32_t pid, uint32_t p
     }
 
     tasks[taskId].taskFunc = taskFunc;
+    tasks[taskId].type = type;
     tasks[taskId].state = TASK_READY;
     tasks[taskId].stackPointer = &stack[stackTop];
 
@@ -47,24 +55,31 @@ int createTask(void (*taskFunc)(void), uint32_t taskId, uint32_t pid, uint32_t p
 // Round-Robin scheduler (no preemption)
 char log[50];
 void scheduler(Graphics_Context *context) {
+    while(1) {
 
-    // ENTERING CRITICAL SECTION, DISABLING SYSTICK
-    SysTick_disableInterrupt();
+        /*ENTERING CRITICAL SECTION, DISABLING SYSTICK -------------------------------------------------------------------- */
+        SysTick_disableInterrupt();
 
-    currentTask = (currentTask + 1) % MAX_TASKS;
-    while (tasks[currentTask].taskFunc == NULL) { // Careful, possible infinite loop
+        // Reset elapsed seconds for the new task
+        elapsed_seconds = 0;
+
         currentTask = (currentTask + 1) % MAX_TASKS;
+        while (tasks[currentTask].taskFunc == NULL) { // Careful, possible infinite loop
+            currentTask = (currentTask + 1) % MAX_TASKS;
+        }
+        // Save task type
+        type = tasks[currentTask].type;
+        // Log and execute task
+        sprintf(log, "Task %d executing", currentTask);
+        tasks[currentTask].taskFunc();
+        logToLCD(context, log);
+
+        // Delete log
+        strcpy(log, "");
+
+        /* EXITING CRITICAL SECTION, ENABLING SYSTICK ------------------------------------------------------------------------*/
+        SysTick_enableInterrupt();
     }
-    // Log and execute task
-    sprintf(log, "Task %d executing", currentTask);
-    tasks[currentTask].taskFunc();
-    logToLCD(context, log);
-
-    // Delete log
-    strcpy(log, "");
-
-    // EXITING CRITICAL SECTION, ENABLING SYSTICK
-    SysTick_enableInterrupt();
 }
 
 

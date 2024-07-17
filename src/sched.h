@@ -8,6 +8,12 @@
 #define STACK_SIZE MAX_TASKS
 
 typedef enum {
+    ANYTIME,
+    SOFT,
+    HARD
+} TaskType;
+
+typedef enum {
     TASK_RUNNING,
     TASK_READY,
     TASK_BLOCKED,
@@ -25,6 +31,7 @@ typedef struct {
 
 typedef struct {
     TaskState state;         /* Current state of the task */
+    TaskType type;
     void (*taskFunc)(void);  /* Pointer to the task function */
     TaskData *stackPointer;  /* Pointer to the location of the task's data in the stack */
 } TaskControlBlock;
@@ -34,7 +41,7 @@ extern TaskData stack[STACK_SIZE];
 extern int currentTask;
 
 void initTasks(void);
-int createTask(void (*taskFunc)(void), uint32_t taskId, uint32_t pid, uint32_t priority);
+int createTask(void (*taskFunc)(void), TaskType type, uint32_t taskId, uint32_t pid, uint32_t priority);
 void scheduler(Graphics_Context *context);
 
 #endif /* SCHED_H_ */

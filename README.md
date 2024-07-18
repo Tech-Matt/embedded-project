@@ -4,8 +4,8 @@ The goal of this project is to realize a small real time operating system for th
 This is particularly useful in real life scenarios where there is a need for a system which, shouldn't fail at all, or at least fail in the most possible safe way, in order to minimize damage to people and / or systems.
 
 You can learn more about the project in the bottom sections or here:
-- Slides:
-- Video:
+- [Slides](https://docs.google.com/presentation/d/16vshX_lLkxlfwivdsLFULtBsFXNq85jy/edit?usp=sharing&ouid=106026534246401659524&rtpof=true&sd=true)
+- [Video](https://drive.google.com/file/d/1aUVh2lWh8voPJnwf7upPIvv_GKgKVdRo/view?usp=sharing)
 
 ## Supported Functionalities
 - Preemptive Scheduler supporting different kinds of Tasks: Anytime, Soft, Hard.

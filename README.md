@@ -45,6 +45,51 @@ typedef struct {
     uint32_t priority;
 } TaskData;
 ```
+## SysTick
+## Scheduler
+To have an effective scheduling policy we need to first keep track of some informations about the tasks we want to execute. We need a **Task Control Block**, let's see it:
+
+```C
+typedef struct {
+    TaskState state;         /* Current state of the task */
+    TaskType type;
+    void (*taskFunc)(void);  /* Pointer to the task function */
+    TaskData *stackPointer;  /* Pointer to the location of the task's data in the stack */
+} TaskControlBlock;
+```
+
+Every task that is being created and then executed has an associated _TaskControlBlock_ that is then kept track of in an array:
+```C
+TaskControlBlock tasks[MAX_TASKS];
+```
+
+In scheduler.h the following functions are defined:
+```C
+void initTasks(void);
+int createTask(void (*taskFunc)(void), TaskType type, uint32_t taskId, uint32_t pid, uint32_t priority);
+void scheduler(Graphics_Context *context);
+```
+
+Let's see their implementation:
+
+_initTask_
+```C
+void initTasks(void) {
+    int i;
+    for (i = 0; i < MAX_TASKS; i++) {
+        tasks[i].state = TASK_SUSPENDED;
+        tasks[i].taskFunc = NULL;
+        tasks[i].stackPointer = NULL;
+        tasks[i].type = ANYTIME;
+    }
+}
+```
+
+The _initTask_ function just initializes all the tasks in the array with default values.
+
+
+
+
 ## Semaphores
 Every OS needs its semaphores implementation. This is no different for a real time os. In this case I defined three main functions in ```semaphore.h``` and ```semaphore.c```:
 - ``` semaphoreInit() ```
@@ -56,7 +101,42 @@ The interesting thing is that each the wait() and signal() have been designed to
 
 #### Implementation
 
-## Synchronization
+Let's see the implementation for the ```wait``` and ```signal```.
+
+```C
+// ATOMIC IMPLEMENTATION -- using LDREX, STREX
+void semaphoreWait(Semaphore *sem) {
+    uint32_t tmp;
+        do {
+            while (sem->value <= 0) {
+                // Busy wait
+            }
+            // Attempt to decrement the semaphore
+            tmp = __ldrex((volatile uint32_t *)&sem->value);
+            tmp--;
+        } while (__strex(tmp, (volatile uint32_t *)&sem->value) != 0);
+
+    // Memory barrier to ensure the operation is complete
+    _dmb();
+}
+
+
+// ATOMIC IMPLEMENTATION -- using LDREX, STREX
+void semaphoreSignal(Semaphore *sem) {
+    uint32_t tmp;
+        do {
+            // Attempt to increment the semaphore
+            tmp = __ldrex((volatile uint32_t *)&sem->value);
+            tmp++;
+        } while (__strex(tmp, (volatile uint32_t *)&sem->value) != 0);
+
+        // Memory barrier to ensure the operation is complete
+        _dmb();
+}
+```
+
+```ldrex``` and ```strex``` are ARM-specific instructions used to implement atomic operations. They are crucial for ensuring that operations on shared resources in a concurrent environment are performed atomically, meaning that no other operations can interfere while they are being executed.
+The ```ldrex``` reads the value from a memory location and marks it as being in the exclusive state. It essentially sets up a monitor on the address, indicating that the program intends to perform an atomic update on this address. ```strex``` attempts to write a new value to the same memory location that was previously loaded by ```ldrex```. The store will only succeed if no other writes have occurred to that location since the ```ldrex```. The result of the operation is returned: ```0``` if the store was successful and ```1``` if it was not.
 
 ## Strenghts / Weaknesses
 

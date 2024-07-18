@@ -25,7 +25,7 @@ void semaphoreWait(Semaphore *sem) {
 }
 
 
-/* Same thing as above applies here */
+// ATOMIC IMPLEMENTATION -- using LDREX, STREX
 void semaphoreSignal(Semaphore *sem) {
     uint32_t tmp;
         do {

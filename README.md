@@ -3,6 +3,10 @@
 The goal of this project is to realize a small real time operating system for the TI MSP432 Board. The OS is gonna have different functionalities, but the main objective is to be able to schedule different kinds of tasks, and to handle possible deadline violations, in order to keep the system in a safe state.
 This is particularly useful in real life scenarios where there is a need for a system which, shouldn't fail at all, or at least fail in the most possible safe way, in order to minimize damage to people and / or systems.
 
+You can learn more about the project in the bottom sections or here:
+- Slides:
+- Video:
+
 ## Supported Functionalities
 - Scheduler supporting different kinds of Tasks: Anytime, Soft, Hard.
 - Atomic Semaphores
